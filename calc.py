@@ -1,12 +1,3 @@
-def signCount(numb=None):
-    if numb is not None:
-        count = 0
-        if "-" in str(numb):  # Negitive Check and Sign removal
-            count = count + 1
-            numb = (str(numb)[1::])
-        return
-
-
 def deciSplit(num=None):
     if num is not None:
         return str(num).split(".")
@@ -30,10 +21,15 @@ def mathOp(nums=None, opEx=None):
             num1DeciList = deciSplit(num1)  # Number1 Splitup into whole and decimal
             num2DeciList = deciSplit(num2)  # Number1 Splitup into whole and decimal
             decL = decR = ""
-            if num1DeciList[1] < num2DeciList[1]:  # Decimal Subs logic
-                decR = (100 + int(num1DeciList[1])) + (~int(num2DeciList[1])) + 1
+            if len(num1DeciList[1]) > len(num2DeciList[1]):
+                num2DeciList[1] = int(str(num2DeciList[1])+"".zfill(len(num1DeciList[1])-len(num2DeciList[1])))
+            elif len(num1DeciList[1]) < len(num2DeciList[1]):
+                num1DeciList[1] = int(str(num1DeciList[1]) + "".zfill(len(num2DeciList[1]) - len(num1DeciList[1])))
+
+            if int(num1DeciList[1]) < int(num2DeciList[1]):  # Decimal Subs logic
+                decR = (int("1"+"".zfill(len(num1DeciList[1]))) + int(num1DeciList[1])) + (~int(num2DeciList[1])) + 1
                 num1DeciList[0] = int(num1DeciList[0]) - 1  # Right Shift operation logic
-            elif num1DeciList[1] >= num2DeciList[1]:
+            elif int(num1DeciList[1]) >= int(num2DeciList[1]):
                 decR = (int(num1DeciList[1])) + (~int(num2DeciList[1])) + 1
 
             decL = int(num1DeciList[0]) + (~int(num2DeciList[0])) + 1
@@ -128,16 +124,14 @@ def mathOp(nums=None, opEx=None):
 def getNumAndOp(inp=None):
     if inp != None:
         import re
-        numList = re.split(r'[+\-\*\/]', inp)
-        opList = [item for item in re.split(r'[\d.]', inp) if item != '']
-
+        regex = r'(?<=\d)[^\d.]'
+        numList = [numbers for numbers in re.split(regex, inp) if numbers != '']
+        opList = re.search(regex, inp).group()
         if numList is not None and opList is not None:
             mathOp(numList, opList)
-
     else:
-        return "Please enter correct mathmatical expression"
+        return "Please enter correct mathematical expression"
 
-
-userInput = input("Enter mathmatical expression")
+userInput = input("Enter mathematical expression")
 
 getNumAndOp(userInput)
